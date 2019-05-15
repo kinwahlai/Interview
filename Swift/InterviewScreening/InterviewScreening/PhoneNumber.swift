@@ -14,7 +14,7 @@ import Cocoa
  **/
 final class PhoneNumber: NSObject {
     static let USA = 0
-    static let COUNTRY_CODES: [String] = ["1", "20", "212", "213", "216", "218", "220", "221", "222", "223",
+    static let countryCodes: [String] = ["1", "20", "212", "213", "216", "218", "220", "221", "222", "223",
                                           "224", "225", "226", "227", "228", "229", "230", "231", "232", "233",
                                           "234", "235", "236", "237", "238", "239", "240", "241", "242", "243",
                                           "244", "245", "246", "247", "248", "249", "250", "251", "252", "253",
@@ -36,7 +36,22 @@ final class PhoneNumber: NSObject {
                                           "92", "93", "94", "95", "960", "961", "962", "963", "964", "965",
                                           "966", "967", "968", "970", "971", "972", "973", "974", "975", "976",
                                           "977", "98", "992", "993", "994", "995", "996", "998"]
-    static let REASONS: [String] = ["Phone Number Too Long or Too Short", "US Number must be length 10", "Unknown Country Code"]
+    
+    enum Reasons: String, CustomStringConvertible {
+        case invalidPhoneLength
+        case unknownCountryCode
+        case invalidUSANumber
+        var description: String {
+            switch self {
+            case .invalidPhoneLength:
+                return "Phone Number Too Long or Too Short"
+            case .unknownCountryCode:
+                return "Unknown Country Code"
+            case .invalidUSANumber:
+                return "US Number must be length 10"
+            }
+        }
+    }
     
     /** The original value. */
     private var originalValue: String = ""
@@ -51,8 +66,7 @@ final class PhoneNumber: NSObject {
 
     /**************************************************************************/
     /* Reduce the string to just numbers */
-    private static func stripPhoneNumber(_ number: String) -> String
-    {
+    private static func stripPhoneNumber(_ number: String) -> String {
         return ""
     }
     /**************************************************************************/
@@ -72,7 +86,7 @@ final class PhoneNumber: NSObject {
     }
     /**************************************************************************/
     private static func validateNorthAmerican(_ countryCodeIndex: Int, _ strippedNumber: String) -> String? {
-        return extractPhoneBody(countryCodeIndex, strippedNumber)?.count == 10 ? nil : REASONS[1]
+        return extractPhoneBody(countryCodeIndex, strippedNumber)?.count == 10 ? nil : Reasons.invalidPhoneLength.description
     }
     /**************************************************************************/
     private static func extractPhoneBody(_ countryCodeIndex: Int, _ strippedNumber: String) -> String? {
@@ -114,4 +128,5 @@ final class PhoneNumber: NSObject {
     public func getStrippedNumber() -> String {
         return strippedValue
     }
+    /***********************************************************************/
 }
